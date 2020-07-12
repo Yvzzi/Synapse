@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="./lazy.pack.js"></script>
+    </head>
+
+    <script id="template_success" type="text/html">
+        <p>生成的随机数是{{num}}</p>
+    </script>
+    <script id="template_fail" type="text/html">
+        <p>错误{{error}}</p>
+    </script>
+
+    <body>
+        <h4>待填写表单:</h4>
+        <form id="form">
+            min: <input type="number" name="min" value="0"/>
+            max: <input type="number" name="max" value="100"/>
+        </form>
+
+        <button onclick="send()">生成随机数</button>
+        <!-- onclick添加事件的监听 -->
+
+        <div id="display"></div>
+    </body>
+
+    <script>
+        function send() {
+            let map = dom.lazyIdMap();
+            let url = "../php/example2.php?api=random";
+            // string, Object, Array, HTMLFormElement
+            packet.request(url, map.form, true)
+            .then(function (result) {
+                // result : { "status": "http code", "statusText": "http text", "data": [] }
+                packet.debug(JSON.stringify(result.data));
+
+                if (result.data.code === 0) {
+                    map.display.append(dom.render("template_success", result.data));
+                } else {
+                    map.display.append(dom.render("template_fail", result.data));
+                }
+            });
+        }
+    </script>
+</html>

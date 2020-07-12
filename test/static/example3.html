@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="./lazy.pack.js"></script>
+    </head>
+
+    <script id="template_success" type="text/html">
+        <p>生成的随机数是{{num}}</p>
+    </script>
+    <script id="template_fail" type="text/html">
+        <p>错误{{error}}</p>
+    </script>
+
+    <body>
+        <h4>待填写表单:</h4>
+
+        max:<div id="max">100</div>
+        min:<div id="min">1</div>
+
+        <button onclick="increase('max')">max+</button>
+        <button onclick="decrease('max')">max-</button>
+        <button onclick="increase('min')">min+</button>
+        <button onclick="decrease('min')">min-</button>
+        <button onclick="send()">生成随机数</button>
+        <!-- onclick添加事件的监听 -->
+
+        <div id="display"></div>
+    </body>
+
+    <script>
+        let max = 100, min = 1;
+        let map;
+
+        dom.ready(function () {
+            map = dom.lazyIdMap();
+        });
+
+        function decrease(which) {
+            if (max - 1 === min) {
+                alert("Cannot decrease");
+            }
+            if (which === "min") {
+                min--;
+            } else {
+                max--;
+            }
+            map.min.textContent = min;
+            map.max.textContent = max;
+        }
+
+        function increase(which) {
+            if (min + 1 === max) {
+                alert("Cannot decrease");
+            }
+            if (which === "min") {
+                min++;
+            } else {
+                max++;
+            }
+            map.min.textContent = min;
+            map.max.textContent = max;
+        }
+
+        function send() {
+            packet.request("../php/example2.php?api=random", { "min": min, "max": max }, true)
+            .then(function (result) {
+                packet.debug(JSON.stringify(result.data));
+                // packet.dumpPacket(result.data)
+
+                if (result.data.code === 0) {
+                    map.display.append(dom.render("template_success", result.data));
+                } else {
+                    map.display.append(dom.render("template_fail", result.data));
+                }
+            });
+        }
+    </script>
+</html>
