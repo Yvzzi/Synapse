@@ -29,7 +29,7 @@
     <script>
         function send() {
             let map = dom.lazyIdMap();
-            let url = "../php/example2.php?api=random";
+            let url = "../backend/example2.php?api=random";
             // string, Object, Array, HTMLFormElement
             packet.request(url, map.form, true)
             .then(function (result) {

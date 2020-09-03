@@ -1,6 +1,5 @@
 <?php
-require_once __DIR__ . "/../../autoload@module.php";
-require_once __DIR__ . "/../autoload@bare.php";
+require_once __DIR__ . "/../../build/Synapse.phar";
 
 use api\Synapse;
 

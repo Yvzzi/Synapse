@@ -64,7 +64,7 @@
         }
 
         function send() {
-            packet.request("../php/example2.php?api=random", { "min": min, "max": max }, true)
+            packet.request("../backend/example2.php?api=random", { "min": min, "max": max }, true)
             .then(function (result) {
                 packet.debug(JSON.stringify(result.data));
                 // packet.dumpPacket(result.data)

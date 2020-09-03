@@ -12,7 +12,7 @@
 
     <script>
         function send() {
-            let url = "../php/example3.php?api=test";
+            let url = "../backend/example3.php?api=test";
             packet.request(url, { min: 5, max: 8}, true)
             .then(function (result) {
                 console.log(result.data);

@@ -1,2 +1,2 @@
 #!/bin/sh
-packager.phar -t php -p ..
+packager.phar -p ..

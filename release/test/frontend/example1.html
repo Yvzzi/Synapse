@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="./lazy.pack.js"></script>
+    </head>
+
+    <body>
+        <h4>待填写表单:</h4>
+        表白哪个用户: <input id="user" type="text" value="22"/>
+        <form id="form">
+            你想对她(他)说的话: <input type="text" name="msg" value="22最爱33了"/>
+        </form>
+
+        <button onclick="send()">send</button>
+        <!-- onclick添加事件的监听 -->
+
+        <h4>回传内容:</h4>
+        <div id="app"></div>
+    </body>
+
+    <script>
+        const resource = {
+            INFO: "template/userInfo.html",
+            ERROR: "template/error.html"
+        };
+        function send() {
+            // dom.lazyId() 可以返回一个map包含所有含id的原始 map的键为id, 值为元素对象
+            let map = dom.lazyIdMap();
+            // 为了防止你们英文看不懂, 这里直接写拼音了2333
+
+            // 这里的api字符串是干嘛的? 就是用来匹配调用服务器什么函数的
+            // 比如下面这个user/22可以认为是获取22的用户信息
+            // 再举一个CSDN的栗子
+            // https://blog.csdn.net/qq_427420/article/details/106956
+            // 观察结构可以发现它是这么描述的 <userid>/article/details/<articleId>
+            // 当然这仅仅是推荐这么干, 你可以用其它的方法 比如 userInfo<id> 等等
+
+            // 两种等价的写法
+
+            // 方法 1
+            // let url = "index.php?api=/user/" + dom.lazyIdMap().user.value;
+            // packet.request(url, dom.lazyIdMap().form, true)
+            // .then(function (result) {
+            //      ...
+            // });
+
+            // 方法 2
+            // packet.requestByOption({
+            //     url: "index.php",
+            //     api: "/user/" + dom.lazyId().user.value,
+            //     data: dom.lazyId().form
+            // }, true)
+            // .then(function (result) {
+            //      ...
+            // });
+            let url = "../backend/example1.php?api=biao_bai:" + map.user.value;
+
+            // packet.request签名 packet.request(String url, Any data, boolean parseDataAsJson = false): Promise
+            // 第二个参数可以智能识别, 如果不是String, 则会先尝试转为一个map再转为String
+            // 这里form表单以 element.name 为key, element.value 为value 组成一个map
+            packet.request(url, map.form, true)
+            .then(function (result) {
+                // result参数是一个对象 大概长这样
+                // { status: 200, statusText: "OK", data: 字符串或者对象或者数组 }
+                // 如果你在packet.request函数的第三个参数上填了true, 则会尝试把data从字符串转为数组
+                // 关于packet.request(...).then(function (result) {}) 的用法暂时记住就好, 更多请自己了解或向我询问
+
+                // packet.debug函数可以用来可视化打印, 只要把结果丢进去就好
+                // 优点是这个debug打印可以渲染html文本, 而控制台不行
+                packet.debug(JSON.stringify(result.data));
+
+                // 控制台打印
+                console.log(result.data);
+
+                // dom.renderFile函数用于模板渲染, 将结果渲染插入为target的子元素
+                // dom.renderTo(String templateFile, Object data)
+                if (result.data.code === 0) {
+                    dom.renderFile(resource.INFO, result.data)
+                    .then(function(result) {
+                        map.app.append(result);
+                    });
+                } else {
+                    dom.renderFile(resource.ERROR, result.data)
+                    .then(function(result) {
+                        map.app.append(result);
+                    });
+                }
+            });
+        }
+
+        // ready(fun) 注册一个函数待浏览器加载完后再执行 浏览器完全加载后会调用这里的 main函数
+        dom.ready(function main() {
+        });
+    </script>
+</html>
